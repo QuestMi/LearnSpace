@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "lear-space"
+version = "0.1.0"
+description = ""
+authors = ["xiaoqinglin <xiaoqinglin2018@gmail.com>"]
+readme = "README.md"
+packages = [{include = "lear_space"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^1.5.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -121,7 +121,7 @@ esac
 
 
 # 1.2 邮件发送停电通知 (mail发邮件要记得装mail包哦!!!)
-
+# 1.2.1/sbin/upsmon -c fsd执行立刻关机操作 (FSD = "Forced Shutdown") 
 #!/bin/bash
 
 case $1 in
@@ -140,9 +140,28 @@ case $1 in
 esac
 ```
 
+### 9.来电自动开机(以Dell服务器为例)
+
+```bash
+# 1.在开机过程中按键盘"F12",进入选择“BIOS SETUP”;
+
+# 2.选择“Power Management”;
+
+# 3.选择“AC Recovery”，点选“Power On”，点击“Apply”;
+
+# 4.勾选“Save as Custom User Setting”,点击OK;
+
+# 5.点击“EXit”退出即可;
+
+# 6.配置完成, 重新上电自动重启;
+```
+
 ### 9.断电测试
 
 ```bash
+# 重启一下 
+sudo /sbin/upsmon -s reload 
+
 # 1. 断开UPS电源
 # 2. 查看状态
 sudo systemctl status nut-client
@@ -150,5 +169,8 @@ sudo systemctl status nut-client
 # 3.查看控制台是否弹出通知
 # 4.插上UPS电源
 # 5.查看控制台是否弹出电源恢复通知
+
+# 6.断电来电测试 
 ```
 
+### 

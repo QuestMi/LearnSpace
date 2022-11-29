@@ -1,0 +1,50 @@
+version: '3.6'
+
+services:
+
+  gitlab:
+    restart: always
+    image: ${GITLAB_IMAGE}
+    hostname: ${HOSTNAME}
+    healthcheck:
+      disable: true
+    expose:
+      - 80
+      - 443
+    ports:
+      - '0.0.0.0:22:22'
+    # 解决搜索引擎搜索不出小于3字符问题
+    # https://gitbaai.ac.cn/gitlab-org/gitlab-ce/issues/40379
+    entrypoint: |
+            bash -c 'sed -i "s/MIN_CHARS_FOR_PARTIAL_MATCHING = 3/MIN_CHARS_FOR_PARTIAL_MATCHING = 1/g" /opt/gitlab/embedded/service/gitlab-rails/lib/gitlab/sql/pattern.rb && /assets/wrapper'
+    volumes:
+      - ./config:/etc/gitlab
+      - ./data:/var/opt/gitlab
+      - ./logs:/var/log/gitlab
+      - ./embedded-logs:/opt/gitlab/embedded/logs/
+    labels:
+      - "traefik.enable=true"
+      # GitLab Web 服务
+      - "traefik.gitlab.port=80"
+      - "traefik.gitlab.frontend.rule=Host:gitlab.${BASEHOST}"
+      - "traefik.gitlab.frontend.entryPoints=http,https"
+      - "traefik.gitlab.frontend.headers.SSLProxyHeaders=X-Forwarded-For:https"
+      - "traefik.gitlab.frontend.headers.STSSeconds=315360000"
+      - "traefik.gitlab.frontend.headers.browserXSSFilter=true"
+      - "traefik.gitlab.frontend.headers.contentTypeNosniff=true"
+      - "traefik.gitlab.frontend.headers.customrequestheaders=X-Forwarded-Ssl:on"
+      - "traefik.gitlab.frontend.passHostHeader=true"
+      - "traefik.gitlab.frontend.passTLSCert=false"
+      # Registry 服务
+      - "traefik.registry.port=5100"
+      - "traefik.registry.frontend.rule=Host:registry.${BASEHOST}"
+      - "traefik.registry.frontend.entryPoints=http,https"
+      # Pages 服务
+      - "traefik.pages.port=5201"
+      - "traefik.pages.frontend.rule=Host:page.${BASEHOST}"
+      - "traefik.pages.frontend.entryPoints=http,https"
+    networks:
+      - traefik
+networks:
+  traefik:
+    external: true

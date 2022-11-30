@@ -23,7 +23,7 @@ services:
       - ./logs:/var/log/gitlab
       - ./embedded-logs:/opt/gitlab/embedded/logs/
     labels:
-      - "traefik.enable=true"
+#      - "traefik.enable=true"
       # GitLab Web 服务
       - "traefik.gitlab.port=80"
       - "traefik.gitlab.frontend.rule=Host:gitlab.${BASEHOST}"
